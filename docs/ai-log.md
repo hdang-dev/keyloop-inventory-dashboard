@@ -15,3 +15,10 @@ One entry per delivery phase: what the AI was asked to do, what was kept or chan
 - Accepted: the handler check order and `{ error: { code, message } }` shape from the plan; calendar-date comparison for days in stock.
 - Changed / rejected and why: the mock database re-reads localStorage on every call, because caching it would make the planned two-tab 409 demo impossible. `?mockError=500` alone is consumed by the first request on page load, so `&mockErrorOn=PUT` was added to demonstrate a failed save. Stocking dates are relative to the current date so the demo keeps its spread of ages.
 - How verified: unit tests for the day 90/91 boundary, local midnight in two time zones and both daylight-saving days; handler tests through the real client for filters, sorting, paging and 400/404/409.
+
+## Phase 2 – Inventory list (R1)
+
+- Asked AI to: build the dealership picker, summary cards, filter bar and server-side table, with all state in the URL.
+- Accepted: TanStack Query and Table, a small URL-state helper instead of a router for this single page, and native selects for filters.
+- Changed / rejected and why: TanStack Table v9 changed its API, so the code uses v8. Invalid URL values fall back to defaults rather than triggering a 400 error page. An impossible min/max range shows an inline message and is never sent. Automatic query retries are off because they would hide the error states and the demo error switch; a retry button and the 60-second poll handle recovery.
+- How verified: tests through the real handlers for filters, URL sync, dependent model options, debounce, sorting, paging, back button and loading/empty/error states; a scripted Chromium run against the real service worker at desktop and phone widths with no console errors.

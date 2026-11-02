@@ -9,8 +9,10 @@ beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
 afterEach(() => {
   cleanup();
   server.resetHandlers();
+  server.events.removeAllListeners();
   localStorage.clear();
   disarmMockError();
+  window.history.replaceState(null, '', '/');
 });
 
 afterAll(() => server.close());
