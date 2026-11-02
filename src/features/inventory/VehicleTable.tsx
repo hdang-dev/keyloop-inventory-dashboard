@@ -8,6 +8,7 @@ import {
   type Updater,
 } from '@tanstack/react-table';
 import { ArrowDown, ArrowUp, ChevronsUpDown } from 'lucide-react';
+import { AgingBadge } from '@/components/AgingBadge';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
@@ -74,17 +75,23 @@ export function VehicleTable({
       columnHelper.accessor('daysInStock', {
         header: 'Days in stock',
         sortDescFirst: true,
-        cell: (info) => <span className="tabular-nums">{info.getValue()}</span>,
+        cell: (info) => (
+          <span className="inline-flex items-center gap-2">
+            <span className="tabular-nums">{info.getValue()}</span>
+            {info.row.original.isAging && <AgingBadge />}
+          </span>
+        ),
       }),
       columnHelper.accessor('currentAction', {
         header: 'Status',
         enableSorting: false,
         cell: (info) => {
           const action = info.getValue();
-          return action ? (
-            ACTION_STATUS_LABELS[action.status]
-          ) : (
-            <span className="text-muted-foreground">–</span>
+          if (action) return ACTION_STATUS_LABELS[action.status];
+          return (
+            <span className="text-muted-foreground">
+              {info.row.original.isAging ? ACTION_STATUS_LABELS.NO_ACTION_YET : '–'}
+            </span>
           );
         },
       }),
@@ -149,7 +156,7 @@ export function VehicleTable({
       <TableBody className={cn(isStale && 'opacity-60 transition-opacity')}>
         {vehicles
           ? table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id}>
+              <TableRow key={row.id} className={cn(row.original.isAging && 'bg-aging-surface/40')}>
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
