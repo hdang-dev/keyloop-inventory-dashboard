@@ -65,6 +65,7 @@ export function VehicleListPanel({ dealershipId, timezone, params }: VehicleList
         sort={params.sort}
         isStale={vehicles.isPlaceholderData}
         onSortChange={inventoryNavigation.setSort}
+        onSelectVehicle={inventoryNavigation.openVehicle}
       />
       {vehicles.data && (
         <Pagination

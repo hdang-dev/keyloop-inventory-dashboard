@@ -49,6 +49,7 @@ interface VehicleTableProps {
   sort: VehicleSort;
   isStale: boolean;
   onSortChange: (sort: VehicleSort) => void;
+  onSelectVehicle: (id: string) => void;
 }
 
 export function VehicleTable({
@@ -57,13 +58,23 @@ export function VehicleTable({
   sort,
   isStale,
   onSortChange,
+  onSelectVehicle,
 }: VehicleTableProps) {
   const columns = useMemo(
     () => [
       columnHelper.accessor('vin', {
         header: 'VIN',
         enableSorting: false,
-        cell: (info) => <span className="font-mono text-xs">{info.getValue()}</span>,
+        // The real button makes each row reachable by keyboard; its click bubbles to the row.
+        cell: (info) => (
+          <button
+            type="button"
+            data-vehicle-id={info.row.original.id}
+            className="rounded-sm font-mono text-xs text-primary underline-offset-2 hover:underline focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
+          >
+            {info.getValue()}
+          </button>
+        ),
       }),
       columnHelper.accessor('make', { header: 'Make', sortDescFirst: false }),
       columnHelper.accessor('model', { header: 'Model', sortDescFirst: false }),
@@ -156,7 +167,11 @@ export function VehicleTable({
       <TableBody className={cn(isStale && 'opacity-60 transition-opacity')}>
         {vehicles
           ? table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id} className={cn(row.original.isAging && 'bg-aging-surface/40')}>
+              <TableRow
+                key={row.id}
+                className={cn('cursor-pointer', row.original.isAging && 'bg-aging-surface/40')}
+                onClick={() => onSelectVehicle(row.original.id)}
+              >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}

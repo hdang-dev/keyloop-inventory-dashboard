@@ -8,6 +8,7 @@ import { inventoryNavigation, useInventoryParams } from '@/features/inventory/in
 import { StockTabs } from '@/features/inventory/StockTabs';
 import { SummaryCards } from '@/features/inventory/SummaryCards';
 import { VehicleListPanel } from '@/features/inventory/VehicleListPanel';
+import { VehiclePanel } from '@/features/vehicle/VehiclePanel';
 import { useDealerships } from '@/hooks/useInventoryQueries';
 
 export function InventoryPage() {
@@ -68,6 +69,11 @@ export function InventoryPage() {
                 />
               </Card>
             </StockTabs>
+            <VehiclePanel
+              vehicleId={params.vehicleId}
+              timezone={dealership.timezone}
+              onClose={inventoryNavigation.closeVehicle}
+            />
           </>
         )}
       </main>

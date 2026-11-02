@@ -29,3 +29,10 @@ One entry per delivery phase: what the AI was asked to do, what was kept or chan
 - Accepted: the tab uses `agingOnly=true` and the UI only reads `isAging` from the API, so no aging rule exists in the browser.
 - Changed / rejected and why: switching tab resets the sort, otherwise a sort chosen on All Stock would break the "oldest first" promise of the Aging tab. The badge sits in the days-in-stock cell rather than its own column, to keep the table narrow.
 - How verified: tests for the request parameters, the badge at day 90 and day 91, URL restore and time-zone dates; visual check in Chromium.
+
+## Phase 4 – Actions and history (R3)
+
+- Asked AI to: build the side panel, the validated action form, history, and an optimistic save with rollback and 409 handling.
+- Accepted: React Hook Form with Zod, optimistic updates to both the table and panel caches, and rollback from a snapshot.
+- Changed / rejected and why: refetch on focus would give the second tab the new version as soon as it was focused, so the planned two-tab conflict could never fire. An edited form now keeps the version the user started from, while an untouched form follows the latest data. A test also exposed that a Radix dialog with no trigger sends focus to `<body>` on close, so focus now returns to the row. Toasts live in the mutation so a failed save is still reported if the panel was closed meanwhile.
+- How verified: tests for save, optimistic display, validation, rollback, 409, refocus during an edit and persistence; a scripted Chromium run with two real tabs, an injected 500 and a reload.
