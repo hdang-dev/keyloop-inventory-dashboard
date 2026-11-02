@@ -36,3 +36,9 @@ One entry per delivery phase: what the AI was asked to do, what was kept or chan
 - Accepted: React Hook Form with Zod, optimistic updates to both the table and panel caches, and rollback from a snapshot.
 - Changed / rejected and why: refetch on focus would give the second tab the new version as soon as it was focused, so the planned two-tab conflict could never fire. An edited form now keeps the version the user started from, while an untouched form follows the latest data. A test also exposed that a Radix dialog with no trigger sends focus to `<body>` on close, so focus now returns to the row. Toasts live in the mutation so a failed save is still reported if the panel was closed meanwhile.
 - How verified: tests for save, optimistic display, validation, rollback, 409, refocus during an edit and persistence; a scripted Chromium run with two real tabs, an injected 500 and a reload.
+
+### Phase 4 follow-up – broken `main`
+
+- What happened: `@hookform/resolvers` 5.9 and 7 declare an optional `ajv@8` peer that conflicts with ESLint's `ajv@6`, which makes `npm ci` fail in CI though it passes locally. The AI then merged Phase 4 with CI red, because a retry command did not make the merge conditional on the checks. `main` was broken until this fix.
+- Fix: pinned `@hookform/resolvers` to 5.2.2, which has no such peer, and merged only after CI passed.
+- How verified: clean `npm ci`, the local suite, and a green CI run on the pull request and on `main`.
