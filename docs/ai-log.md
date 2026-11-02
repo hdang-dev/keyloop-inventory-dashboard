@@ -42,3 +42,11 @@ One entry per delivery phase: what the AI was asked to do, what was kept or chan
 - What happened: `@hookform/resolvers` 5.9 and 7 declare an optional `ajv@8` peer that conflicts with ESLint's `ajv@6`, which makes `npm ci` fail in CI though it passes locally. The AI then merged Phase 4 with CI red, because a retry command did not make the merge conditional on the checks. `main` was broken until this fix.
 - Fix: pinned `@hookform/resolvers` to 5.2.2, which has no such peer, and merged only after CI passed.
 - How verified: clean `npm ci`, the local suite, and a green CI run on the pull request and on `main`.
+
+## Phase 5 – Quality and observability
+
+- Asked AI to: add the error boundary, structured logger, `X-Request-Id`, web-vitals logging and an accessibility pass.
+- Accepted: one replaceable log sink as the Sentry integration point; API failures logged at `warn` with the request id, since they are expected and handled.
+- Changed / rejected and why: a scripted axe audit flagged the summary cards' `dl` markup because card wrappers sat between `dl` and `dt`, so it was replaced with plain elements. A skip link was added. The app now still renders if the mock fails to start, so its error states can explain the problem.
+- How verified: unit tests for the logger, client and error boundary; axe (WCAG 2.1 A/AA and best practices) clean on the page and the open panel; a scripted keyboard-only run from the skip link through to saving an action and focus returning to the row; request ids confirmed present and unique on every API call; no console errors.
+- Follow-up to the Phase 4 incident: the CI failure was also a timing assumption in one test, because the error toast renders a tick before the table rollback. The test now waits for the rollback, and would still fail if it never happened.

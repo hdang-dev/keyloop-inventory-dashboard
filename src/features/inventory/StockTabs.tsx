@@ -19,7 +19,7 @@ export function StockTabs({ dealershipId, tab, filters, children }: StockTabsPro
       onValueChange={(value) => inventoryNavigation.selectTab(value as StockTab)}
       className="gap-4"
     >
-      <TabsList>
+      <TabsList aria-label="Stock view">
         <TabsTrigger value="all">All Stock</TabsTrigger>
         <TabsTrigger value="aging">
           Aging Stock
