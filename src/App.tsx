@@ -1,9 +1,14 @@
+import { useState } from 'react';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { InventoryPage } from '@/features/inventory/InventoryPage';
+import { createQueryClient } from '@/lib/queryClient';
+
 export function App() {
+  const [queryClient] = useState(createQueryClient);
+
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <header className="border-b px-6 py-4">
-        <h1 className="text-xl font-semibold">Inventory Dashboard</h1>
-      </header>
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <InventoryPage />
+    </QueryClientProvider>
   );
 }

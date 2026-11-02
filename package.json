@@ -18,6 +18,8 @@
     "build:demo": "tsc --noEmit && vite build --mode demo"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.105.1",
+    "@tanstack/react-table": "^8.21.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cn": "^0.5.1",
