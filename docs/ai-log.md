@@ -50,3 +50,10 @@ One entry per delivery phase: what the AI was asked to do, what was kept or chan
 - Changed / rejected and why: a scripted axe audit flagged the summary cards' `dl` markup because card wrappers sat between `dl` and `dt`, so it was replaced with plain elements. A skip link was added. The app now still renders if the mock fails to start, so its error states can explain the problem.
 - How verified: unit tests for the logger, client and error boundary; axe (WCAG 2.1 A/AA and best practices) clean on the page and the open panel; a scripted keyboard-only run from the skip link through to saving an action and focus returning to the row; request ids confirmed present and unique on every API call; no console errors.
 - Follow-up to the Phase 4 incident: the CI failure was also a timing assumption in one test, because the error toast renders a tick before the table rollback. The test now waits for the rollback, and would still fail if it never happened.
+
+## Phase 6 – Docs and polish
+
+- Asked AI to: write the README and AI Collaboration Narrative, finalise this log, and re-check the finished app against the brief.
+- Accepted: README structure following the brief's build, run and test requirements.
+- Changed / rejected and why: added the missing test for the polling configuration. Demo steps state that the second tab must have an unsaved edit, because an untouched form correctly follows the latest data and raises no conflict.
+- How verified: 12 scripted end-to-end checks on the built demo bundle covering filters, the aging boundary, save, rollback, load errors and dealership switching; production bundle confirmed free of mock code; README steps run from a fresh clone.
