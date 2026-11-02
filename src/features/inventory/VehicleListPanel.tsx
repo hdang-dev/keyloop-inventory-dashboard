@@ -38,9 +38,10 @@ export function VehicleListPanel({ dealershipId, timezone, params }: VehicleList
   }
 
   if (vehicles.data?.total === 0) {
+    const noStockTitle = params.tab === 'aging' ? 'No aging stock' : 'No vehicles to show';
     return (
       <EmptyState
-        title={hasActiveFilters(params) ? 'No vehicles match these filters' : 'No vehicles to show'}
+        title={hasActiveFilters(params) ? 'No vehicles match these filters' : noStockTitle}
       >
         {hasActiveFilters(params) && (
           <Button variant="outline" size="sm" onClick={() => inventoryNavigation.resetFilters()}>

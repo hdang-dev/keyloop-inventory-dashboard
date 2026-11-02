@@ -22,3 +22,10 @@ One entry per delivery phase: what the AI was asked to do, what was kept or chan
 - Accepted: TanStack Query and Table, a small URL-state helper instead of a router for this single page, and native selects for filters.
 - Changed / rejected and why: TanStack Table v9 changed its API, so the code uses v8. Invalid URL values fall back to defaults rather than triggering a 400 error page. An impossible min/max range shows an inline message and is never sent. Automatic query retries are off because they would hide the error states and the demo error switch; a retry button and the 60-second poll handle recovery.
 - How verified: tests through the real handlers for filters, URL sync, dependent model options, debounce, sorting, paging, back button and loading/empty/error states; a scripted Chromium run against the real service worker at desktop and phone widths with no console errors.
+
+## Phase 3 – Aging stock (R2)
+
+- Asked AI to: add the Aging tab, aging badge, highlighted summary card and dealership-time-zone dates.
+- Accepted: the tab uses `agingOnly=true` and the UI only reads `isAging` from the API, so no aging rule exists in the browser.
+- Changed / rejected and why: switching tab resets the sort, otherwise a sort chosen on All Stock would break the "oldest first" promise of the Aging tab. The badge sits in the days-in-stock cell rather than its own column, to keep the table narrow.
+- How verified: tests for the request parameters, the badge at day 90 and day 91, URL restore and time-zone dates; visual check in Chromium.

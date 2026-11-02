@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { FilterBar } from '@/features/inventory/FilterBar';
 import { inventoryNavigation, useInventoryParams } from '@/features/inventory/inventoryParams';
+import { StockTabs } from '@/features/inventory/StockTabs';
 import { SummaryCards } from '@/features/inventory/SummaryCards';
 import { VehicleListPanel } from '@/features/inventory/VehicleListPanel';
 import { useDealerships } from '@/hooks/useInventoryQueries';
@@ -52,14 +53,21 @@ export function InventoryPage() {
         {dealership && (
           <>
             <SummaryCards dealershipId={dealership.id} />
-            <FilterBar key={dealership.id} dealershipId={dealership.id} params={params} />
-            <Card className="gap-0 overflow-hidden py-0">
-              <VehicleListPanel
-                dealershipId={dealership.id}
-                timezone={dealership.timezone}
-                params={params}
-              />
-            </Card>
+            <StockTabs
+              dealershipId={dealership.id}
+              tab={params.tab}
+              filters={
+                <FilterBar key={dealership.id} dealershipId={dealership.id} params={params} />
+              }
+            >
+              <Card className="gap-0 overflow-hidden py-0">
+                <VehicleListPanel
+                  dealershipId={dealership.id}
+                  timezone={dealership.timezone}
+                  params={params}
+                />
+              </Card>
+            </StockTabs>
           </>
         )}
       </main>

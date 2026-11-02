@@ -1,6 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { AGING_THRESHOLD_DAYS } from '@/domain/aging';
 import { useSummary } from '@/hooks/useInventoryQueries';
 
 function SummaryCard({
@@ -38,9 +39,10 @@ export function SummaryCards({ dealershipId }: { dealershipId: string }) {
           isLoading={summary.isPending}
         />
         <SummaryCard
-          label="Aging vehicles"
+          label={`Aging vehicles (over ${AGING_THRESHOLD_DAYS} days)`}
           value={summary.data?.aging}
           isLoading={summary.isPending}
+          className="border-aging-border bg-aging-surface [&_dd]:text-aging [&_dt]:text-aging"
         />
       </dl>
       {summary.isError && !summary.data && (
