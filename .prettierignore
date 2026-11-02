@@ -1,0 +1,6 @@
+dist
+coverage
+package-lock.json
+public/mockServiceWorker.js
+PLAN.md
+SYSTEM_DESIGN.md
