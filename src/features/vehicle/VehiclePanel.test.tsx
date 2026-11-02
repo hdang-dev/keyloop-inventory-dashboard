@@ -198,7 +198,10 @@ describe('vehicle panel', () => {
       await screen.findByText('Could not save the action');
       await user.keyboard('{Escape}');
       await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
-      expect(within(rowFor('VINDAY91')).getByText('No Action Yet')).toBeInTheDocument();
+      // React Query delivers the rollback on a later tick than the toast, which renders at once.
+      await waitFor(() =>
+        expect(within(rowFor('VINDAY91')).getByText('No Action Yet')).toBeInTheDocument(),
+      );
       expect(db.getVehicle('day91')?.currentAction).toBeNull();
     });
   });
