@@ -4,7 +4,7 @@ import type { VehicleQuery } from '@/domain/types';
 import { generateSeed } from '@/mocks/data/seed';
 import { createDb } from '@/mocks/db';
 import { armMockError } from '@/mocks/mockError';
-import { LONDON, NOW, SAIGON, useMockApi } from '@/test/fixtures';
+import { LONDON, NOW, SAIGON, serveMockApi } from '@/test/fixtures';
 
 const list = (query: Partial<VehicleQuery> = {}) =>
   inventoryApi.listVehicles({ dealershipId: SAIGON.id, ...query });
@@ -23,7 +23,7 @@ async function apiError(promise: Promise<unknown>): Promise<ApiError> {
 
 describe('mock API', () => {
   beforeEach(() => {
-    useMockApi();
+    serveMockApi();
   });
 
   describe('GET /vehicles', () => {
@@ -208,7 +208,7 @@ describe('mock API', () => {
 
     it('persists across database instances, as between tabs and reloads', async () => {
       await inventoryApi.saveAction('day91', valid);
-      useMockApi();
+      serveMockApi();
       expect((await inventoryApi.getVehicle('day91')).currentAction?.version).toBe(1);
     });
   });

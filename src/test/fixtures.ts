@@ -51,7 +51,7 @@ export const VEHICLES: VehicleRecord[] = [
 ];
 
 /** Serves the fixture stock through the real mock handlers for one test. */
-export function useMockApi(vehicles: VehicleRecord[] = VEHICLES) {
+export function serveMockApi(vehicles: VehicleRecord[] = VEHICLES) {
   const db = createDb({ dealerships: [SAIGON, LONDON], vehicles, now: () => NOW });
   server.use(...createHandlers(db));
   return db;

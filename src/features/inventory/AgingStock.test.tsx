@@ -1,5 +1,5 @@
 import { screen, waitFor, within } from '@testing-library/react';
-import { LONDON, SAIGON, useMockApi, VEHICLES } from '@/test/fixtures';
+import { LONDON, SAIGON, serveMockApi, VEHICLES } from '@/test/fixtures';
 import { currentParams, renderApp, trackRequests } from '@/test/render';
 
 async function rowFor(vin: string) {
@@ -8,7 +8,7 @@ async function rowFor(vin: string) {
 
 describe('aging stock', () => {
   it('Aging tab asks the server for aging stock only, oldest first', async () => {
-    useMockApi();
+    serveMockApi();
     const requests = trackRequests();
     const { user } = renderApp();
     await screen.findByText('VINFRESH');
@@ -25,7 +25,7 @@ describe('aging stock', () => {
   });
 
   it('opening the Aging tab restores oldest first and page 1 but keeps filters', async () => {
-    useMockApi();
+    serveMockApi();
     const requests = trackRequests();
     const { user } = renderApp('?sort=make:asc&make=Honda');
     await screen.findByText('VINOLD');
@@ -39,7 +39,7 @@ describe('aging stock', () => {
   });
 
   it('restores the Aging tab from the URL', async () => {
-    useMockApi();
+    serveMockApi();
     renderApp('?tab=aging');
     expect(await screen.findByRole('tab', { name: /Aging Stock/ })).toHaveAttribute(
       'aria-selected',
@@ -50,14 +50,14 @@ describe('aging stock', () => {
   });
 
   it('shows the aging count on the tab', async () => {
-    useMockApi();
+    serveMockApi();
     renderApp();
     const tab = await screen.findByRole('tab', { name: /Aging Stock/ });
     expect(await within(tab).findByText('3')).toBeInTheDocument();
   });
 
   it('shows the badge only on vehicles the API flags as aging', async () => {
-    useMockApi();
+    serveMockApi();
     renderApp();
     expect(within(await rowFor('VINDAY91')).getByText('Aging')).toBeInTheDocument();
     expect(within(await rowFor('VINOLDEST')).getByText('Aging')).toBeInTheDocument();
@@ -66,14 +66,14 @@ describe('aging stock', () => {
   });
 
   it('marks aging vehicles with no decision, and leaves other rows blank', async () => {
-    useMockApi();
+    serveMockApi();
     renderApp();
     expect(within(await rowFor('VINDAY91')).getByText('No Action Yet')).toBeInTheDocument();
     expect(within(await rowFor('VINDAY90')).queryByText('No Action Yet')).not.toBeInTheDocument();
   });
 
   it('highlights the aging count in the summary', async () => {
-    useMockApi();
+    serveMockApi();
     renderApp();
     const summary = await screen.findByRole('region', { name: 'Stock summary' });
     expect(await within(summary).findByText('Aging vehicles (over 90 days)')).toBeInTheDocument();
@@ -81,7 +81,7 @@ describe('aging stock', () => {
   });
 
   it('shows a clear message when nothing is aging', async () => {
-    useMockApi(VEHICLES.filter(({ id }) => id === 'fresh'));
+    serveMockApi(VEHICLES.filter(({ id }) => id === 'fresh'));
     renderApp('?tab=aging');
     expect(await screen.findByText('No aging stock')).toBeInTheDocument();
   });
@@ -90,7 +90,7 @@ describe('aging stock', () => {
     // 20:00 UTC on 9 June is 03:00 on 10 June in Saigon and 21:00 on 9 June in London.
     const stockedAt = '2026-06-09T20:00:00Z';
     const base = { make: 'Toyota', model: 'Camry', stockedAt, soldAt: null };
-    useMockApi([
+    serveMockApi([
       { ...base, id: 'a', vin: 'VINSAIGON', dealershipId: SAIGON.id },
       { ...base, id: 'b', vin: 'VINLONDON', dealershipId: LONDON.id },
     ]);

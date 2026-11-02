@@ -131,6 +131,14 @@ export const inventoryNavigation = {
     update({ sort, page: 1 });
   },
 
+  openVehicle(vehicleId: string) {
+    update({ vehicleId });
+  },
+
+  closeVehicle() {
+    update({ vehicleId: undefined });
+  },
+
   setPage(page: number, options?: { replace?: boolean }) {
     update({ page }, options);
   },

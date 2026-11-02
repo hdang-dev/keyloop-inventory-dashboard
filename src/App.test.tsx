@@ -3,7 +3,7 @@ import { http, HttpResponse } from 'msw';
 import type { VehicleRecord } from '@/mocks/data/seed';
 import { armMockError } from '@/mocks/mockError';
 import { server } from '@/mocks/server';
-import { LONDON, NOW, SAIGON, useMockApi } from '@/test/fixtures';
+import { LONDON, NOW, SAIGON, serveMockApi } from '@/test/fixtures';
 import { currentParams, renderApp, trackRequests } from '@/test/render';
 
 const vehicleTable = () => screen.findByRole('table', { name: 'Vehicles' });
@@ -29,7 +29,7 @@ function manyVehicles(count: number): VehicleRecord[] {
 
 describe('inventory list', () => {
   it('shows skeletons, then the first dealership with oldest stock first', async () => {
-    useMockApi();
+    serveMockApi();
     renderApp();
 
     expect(await screen.findByLabelText('Dealership')).toHaveValue(SAIGON.id);
@@ -48,7 +48,7 @@ describe('inventory list', () => {
   });
 
   it('shows summary counts for the selected dealership', async () => {
-    useMockApi();
+    serveMockApi();
     renderApp();
     const summary = await screen.findByRole('region', { name: 'Stock summary' });
     expect(await within(summary).findByText('5')).toBeInTheDocument();
@@ -56,7 +56,7 @@ describe('inventory list', () => {
   });
 
   it('switching dealership reloads its stock, clears filters and updates the URL', async () => {
-    useMockApi();
+    serveMockApi();
     const { user } = renderApp('?make=Honda');
     await screen.findByText('VINOLD');
 
@@ -69,7 +69,7 @@ describe('inventory list', () => {
 
   describe('filters', () => {
     it('updates the URL and the request when filtering by make and model', async () => {
-      useMockApi();
+      serveMockApi();
       const requests = trackRequests();
       const { user } = renderApp();
       await screen.findByText('VINFRESH');
@@ -87,7 +87,7 @@ describe('inventory list', () => {
     });
 
     it('offers only the models of the selected make, and clears the model with the make', async () => {
-      useMockApi();
+      serveMockApi();
       const { user } = renderApp();
       await screen.findByText('VINFRESH');
 
@@ -109,7 +109,7 @@ describe('inventory list', () => {
     });
 
     it('debounces the days inputs and sends one request for one edit', async () => {
-      useMockApi();
+      serveMockApi();
       const requests = trackRequests();
       const { user } = renderApp();
       await screen.findByText('VINFRESH');
@@ -125,7 +125,7 @@ describe('inventory list', () => {
     });
 
     it('explains an impossible range instead of sending it', async () => {
-      useMockApi();
+      serveMockApi();
       const requests = trackRequests();
       const { user } = renderApp('?minDays=50');
       await screen.findByText('VINOLDEST');
@@ -140,7 +140,7 @@ describe('inventory list', () => {
     });
 
     it('resets filters, including the days inputs, and returns to page 1', async () => {
-      useMockApi(manyVehicles(30));
+      serveMockApi(manyVehicles(30));
       const { user } = renderApp('?make=Toyota&minDays=1&page=2');
       await screen.findByText('Page 2 of 2');
       expect(screen.getByLabelText('Min days')).toHaveValue(1);
@@ -153,7 +153,7 @@ describe('inventory list', () => {
     });
 
     it('restores filters from the URL', async () => {
-      useMockApi();
+      serveMockApi();
       const requests = trackRequests();
       renderApp('?make=Honda&model=Civic&minDays=90&maxDays=100');
       expect(await screen.findByText('VINDAY91')).toBeInTheDocument();
@@ -168,7 +168,7 @@ describe('inventory list', () => {
     });
 
     it('ignores invalid URL values rather than failing the page', async () => {
-      useMockApi();
+      serveMockApi();
       const requests = trackRequests();
       renderApp('?page=abc&sort=vin:asc&minDays=-4&dealershipId=unknown');
       expect(await screen.findByText('VINFRESH')).toBeInTheDocument();
@@ -183,7 +183,7 @@ describe('inventory list', () => {
 
   describe('sorting and paging', () => {
     it('sorts on the server and reflects the order in the URL and header', async () => {
-      useMockApi();
+      serveMockApi();
       const requests = trackRequests();
       const { user } = renderApp();
       await screen.findByText('VINFRESH');
@@ -202,7 +202,7 @@ describe('inventory list', () => {
     });
 
     it('moves between pages, keeping the previous rows while the next page loads', async () => {
-      useMockApi(manyVehicles(45));
+      serveMockApi(manyVehicles(45));
       const requests = trackRequests();
       const { user } = renderApp();
 
@@ -222,7 +222,7 @@ describe('inventory list', () => {
     });
 
     it('returns to page 1 when a filter changes', async () => {
-      useMockApi(manyVehicles(30));
+      serveMockApi(manyVehicles(30));
       const { user } = renderApp('?page=2');
       await screen.findByText('Page 2 of 2');
       await screen.findByRole('option', { name: 'Toyota' });
@@ -234,14 +234,14 @@ describe('inventory list', () => {
     });
 
     it('moves back to the last page when the URL points past the end', async () => {
-      useMockApi(manyVehicles(30));
+      serveMockApi(manyVehicles(30));
       renderApp('?page=9');
       expect(await screen.findByText('Page 2 of 2')).toBeInTheDocument();
       expect(currentParams().get('page')).toBe('2');
     });
 
     it('follows the browser back button', async () => {
-      useMockApi(manyVehicles(30));
+      serveMockApi(manyVehicles(30));
       const { user } = renderApp();
       await screen.findByText('Page 1 of 2');
       await user.click(screen.getByRole('button', { name: 'Next' }));
@@ -255,7 +255,7 @@ describe('inventory list', () => {
 
   describe('empty and error states', () => {
     it('shows an empty state with a reset when filters match nothing', async () => {
-      useMockApi();
+      serveMockApi();
       const { user } = renderApp('?minDays=500');
 
       expect(await screen.findByText('No vehicles match these filters')).toBeInTheDocument();
@@ -266,13 +266,13 @@ describe('inventory list', () => {
     });
 
     it('shows an empty state for a dealership with no stock', async () => {
-      useMockApi([]);
+      serveMockApi([]);
       renderApp();
       expect(await screen.findByText('No vehicles to show')).toBeInTheDocument();
     });
 
     it('shows an error with a working retry when the list fails', async () => {
-      useMockApi();
+      serveMockApi();
       server.use(
         http.get(
           '/api/vehicles',
@@ -290,7 +290,7 @@ describe('inventory list', () => {
     });
 
     it('shows an error with a working retry when dealerships fail', async () => {
-      useMockApi();
+      serveMockApi();
       armMockError(500);
       const { user } = renderApp();
 
