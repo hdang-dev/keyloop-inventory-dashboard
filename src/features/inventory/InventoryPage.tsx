@@ -19,6 +19,12 @@ export function InventoryPage() {
 
   return (
     <div className="min-h-screen">
+      <a
+        href="#main-content"
+        className="sr-only rounded-md bg-primary px-3 py-2 text-sm text-primary-foreground focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50"
+      >
+        Skip to main content
+      </a>
       <header className="border-b bg-card">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6">
           <h1 className="text-xl font-semibold">Inventory Dashboard</h1>
@@ -42,7 +48,11 @@ export function InventoryPage() {
         </div>
       </header>
 
-      <main className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6">
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6"
+      >
         {dealerships.isPending && <Skeleton data-testid="page-skeleton" className="h-64 w-full" />}
         {dealerships.isError && !dealerships.data && (
           <ErrorState

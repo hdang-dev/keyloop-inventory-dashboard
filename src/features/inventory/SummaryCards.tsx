@@ -8,20 +8,20 @@ function SummaryCard({
   label,
   value,
   isLoading,
-  className,
+  highlighted = false,
 }: {
   label: string;
   value: number | undefined;
   isLoading: boolean;
-  className?: string;
+  highlighted?: boolean;
 }) {
   return (
-    <Card className={className}>
+    <Card className={highlighted ? 'border-aging-border bg-aging-surface text-aging' : undefined}>
       <CardContent>
-        <dt className="text-sm text-muted-foreground">{label}</dt>
-        <dd className="mt-1 text-3xl font-semibold tabular-nums">
+        <p className={highlighted ? 'text-sm' : 'text-sm text-muted-foreground'}>{label}</p>
+        <div className="mt-1 text-3xl font-semibold tabular-nums">
           {isLoading ? <Skeleton className="h-9 w-20" /> : (value ?? '–')}
-        </dd>
+        </div>
       </CardContent>
     </Card>
   );
@@ -32,7 +32,7 @@ export function SummaryCards({ dealershipId }: { dealershipId: string }) {
 
   return (
     <section aria-label="Stock summary">
-      <dl className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2">
         <SummaryCard
           label="Total vehicles"
           value={summary.data?.total}
@@ -42,9 +42,9 @@ export function SummaryCards({ dealershipId }: { dealershipId: string }) {
           label={`Aging vehicles (over ${AGING_THRESHOLD_DAYS} days)`}
           value={summary.data?.aging}
           isLoading={summary.isPending}
-          className="border-aging-border bg-aging-surface [&_dd]:text-aging [&_dt]:text-aging"
+          highlighted
         />
-      </dl>
+      </div>
       {summary.isError && !summary.data && (
         <p role="alert" className="mt-2 text-sm text-destructive">
           Could not load the stock summary.{' '}

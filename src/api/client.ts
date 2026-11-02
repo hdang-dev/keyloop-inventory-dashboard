@@ -1,4 +1,7 @@
 import type { VehicleAction } from '@/domain/types';
+import { logger } from '@/lib/logger';
+
+export const REQUEST_ID_HEADER = 'X-Request-Id';
 
 export class ApiError extends Error {
   readonly status: number;
@@ -31,15 +34,28 @@ async function toApiError(response: Response): Promise<ApiError> {
 }
 
 export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T> {
+  // Sent with every call and logged on failure, to link a UI error to the backend's logs.
+  const requestId = crypto.randomUUID();
+  const method = init?.method ?? 'GET';
+
+  function fail(error: ApiError): ApiError {
+    logger.warn('api_error', { requestId, method, path, status: error.status, code: error.code });
+    return error;
+  }
+
   let response: Response;
   try {
     response = await fetch(`/api${path}`, {
       ...init,
-      headers: { 'Content-Type': 'application/json', ...init?.headers },
+      headers: {
+        'Content-Type': 'application/json',
+        [REQUEST_ID_HEADER]: requestId,
+        ...init?.headers,
+      },
     });
   } catch {
-    throw new ApiError(0, 'NETWORK_ERROR', 'Could not reach the server');
+    throw fail(new ApiError(0, 'NETWORK_ERROR', 'Could not reach the server'));
   }
-  if (!response.ok) throw await toApiError(response);
+  if (!response.ok) throw fail(await toApiError(response));
   return (await response.json()) as T;
 }
