@@ -8,3 +8,10 @@ One entry per delivery phase: what the AI was asked to do, what was kept or chan
 - Accepted: the planned stack. Generated shadcn components are kept close to upstream.
 - Changed / rejected and why: the shadcn CLI generated a broken `from "cn"` import, which was corrected to `@/lib/utils`, and its unused `next-themes` dependency was removed. TypeScript is pinned to 5.9 because `typescript-eslint` does not support 7 yet. The design gained response shapes, a maintainability note and an explicit "no authentication" assumption, which the brief's checklist exposed as gaps.
 - How verified: lint, typecheck, tests and build locally and in CI.
+
+## Phase 1 – Domain and mock API
+
+- Asked AI to: implement the domain types, the aging calculation, the MSW mock of every endpoint in the contract, and a typed API client.
+- Accepted: the handler check order and `{ error: { code, message } }` shape from the plan; calendar-date comparison for days in stock.
+- Changed / rejected and why: the mock database re-reads localStorage on every call, because caching it would make the planned two-tab 409 demo impossible. `?mockError=500` alone is consumed by the first request on page load, so `&mockErrorOn=PUT` was added to demonstrate a failed save. Stocking dates are relative to the current date so the demo keeps its spread of ages.
+- How verified: unit tests for the day 90/91 boundary, local midnight in two time zones and both daylight-saving days; handler tests through the real client for filters, sorting, paging and 400/404/409.
